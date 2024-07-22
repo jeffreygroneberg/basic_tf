@@ -55,4 +55,4 @@ jobs:
         run: terraform apply -auto-approve
         env:
           TF_VAR_resource_group: ${{ vars.RESOURCE_GROUP }}
-          TF_VAR_ssh_public_key: ${{ secrets.SSH_KEY }}
+          TF_VAR_ssh_key: ${{ secrets.SSH_KEY }}
