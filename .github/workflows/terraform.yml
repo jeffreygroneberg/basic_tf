@@ -1,0 +1,52 @@
+name: Terraform Deployment
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/terraform.yml"      
+  pull_request:
+    branches:
+      - main
+      - master # to be removed
+  workflow_dispatch:
+jobs:
+  build_and_deplpoy:
+    name: Build, Validate & Deploy
+    runs-on: [os-small-amd64-linux]
+    defaults:
+      run:
+        working-directory: "basic"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Log in with Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
+      
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+        
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+      
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve
