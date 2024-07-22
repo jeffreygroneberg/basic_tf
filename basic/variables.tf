@@ -4,3 +4,10 @@ variable "resource_group" {
   type        = string
 
 }
+
+variable "ssh_key" {
+
+  description = "The SSH public key to be used for authentication."
+  type        = string
+
+}

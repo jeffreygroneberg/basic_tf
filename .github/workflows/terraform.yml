@@ -48,9 +48,11 @@ jobs:
         run: terraform plan
         env:
           TF_VAR_resource_group: ${{ env.RESOURCE_GROUP }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_KEY }}
 
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
         env:
           TF_VAR_resource_group: ${{ env.RESOURCE_GROUP }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_KEY }}
