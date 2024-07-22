@@ -17,16 +17,24 @@ data "azurerm_resource_group" "example" {
   name = var.resource_group
 }
 
+locals {
+  rg_location = data.azurerm_resource_group.example.location
+}
+
+locals {
+  rg_name = data.azurerm_resource_group.example.name
+}
+
 resource "azurerm_virtual_network" "example_vnet" {
   name                = "example-vnet"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = local.rg_location
+  resource_group_name = local.rg_name
 }
 
 resource "azurerm_subnet" "example_subnet" {
   name                 = "example-subnet"
-  resource_group_name  = azurerm_resource_group.example.name
+  resource_group_name  = local.rg_name
   virtual_network_name = azurerm_virtual_network.example_vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 
@@ -34,8 +42,8 @@ resource "azurerm_subnet" "example_subnet" {
 
 resource "azurerm_network_interface" "example_nic" {
   name                = "example-nic"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = local.rg_location
+  resource_group_name = local.rg_name
 
   ip_configuration {
     name                          = "internal"
@@ -47,15 +55,15 @@ resource "azurerm_network_interface" "example_nic" {
 
 resource "azurerm_public_ip" "example_public_ip" {
   name                = "example-publicip"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = local.rg_location
+  resource_group_name = local.rg_name
   allocation_method   = "Dynamic"
 }
 
 resource "azurerm_linux_virtual_machine" "example_vm" {
   name                = "example-vm"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
+  resource_group_name = local.rg_name
+  location            = local.rg_location
   size                = "Standard_B1s"
   admin_username      = "adminuser"
   network_interface_ids = [
@@ -80,8 +88,8 @@ resource "azurerm_linux_virtual_machine" "example_vm" {
 
 resource "azurerm_network_security_group" "example_nsg" {
   name                = "example-nsg"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = local.rg_location
+  resource_group_name = local.rg_name
 }
 
 resource "azurerm_network_security_rule" "allow_ssh" {
@@ -94,7 +102,7 @@ resource "azurerm_network_security_rule" "allow_ssh" {
   destination_port_range      = "22"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.example.name
+  resource_group_name         = local.rg_name
   network_security_group_name = azurerm_network_security_group.example_nsg.name
 }
 
