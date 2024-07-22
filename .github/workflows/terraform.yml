@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - ".github/workflows/terraform.yml"      
+      - ".github/workflows/terraform.yml"
   pull_request:
     branches:
       - main
@@ -20,21 +20,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Log in with Azure CLI
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.5.7"
-      
+
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
         continue-on-error: true
-        
+
       - name: Terraform Init
         id: init
         run: terraform init
@@ -46,7 +46,11 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan
-      
+        env:
+          TF_VAR_resource_group: ${{ env.RESOURCE_GROUP }}
+
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
+        env:
+          TF_VAR_resource_group: ${{ env.RESOURCE_GROUP }}

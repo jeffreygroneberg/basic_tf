@@ -12,9 +12,9 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
-  location = "West Europe"
+# get resource group with data source
+data "azurerm_resource_group" "example" {
+  name = var.resource_group
 }
 
 resource "azurerm_virtual_network" "example_vnet" {
@@ -29,7 +29,7 @@ resource "azurerm_subnet" "example_subnet" {
   resource_group_name  = azurerm_resource_group.example.name
   virtual_network_name = azurerm_virtual_network.example_vnet.name
   address_prefixes     = ["10.0.1.0/24"]
-  
+
 }
 
 resource "azurerm_network_interface" "example_nic" {
